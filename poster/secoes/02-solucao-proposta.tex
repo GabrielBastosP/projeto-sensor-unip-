@@ -1,0 +1,73 @@
+% !TEX root = ../main.tex
+% ================== SOLUCAO PROPOSTA ==================
+\secao{Solução proposta}
+
+A câmara é uma caixa de acrílico com três lâmpadas W5W (12\,V/5\,W) no teto, uma chapa de
+alumínio como massa térmica e o sensor LM35 suspenso no centro. O ESP32 lê a temperatura,
+calcula a ação de controle PI e gera o PWM que chaveia as lâmpadas pelo MOSFET.
+
+% ---------- Diagrama da malha de controle (desenhado em TikZ, nao precisa de imagem) ----------
+\titulofig{Malha de controle da câmara térmica}
+\begin{center}
+\begin{tikzpicture}[
+    font=\normalsize,
+    bloco/.style={draw, thick, rounded corners=6pt, fill=azultitulo!8, align=center,
+                  minimum height=3.8cm, minimum width=8.2cm},
+    seta/.style={-{Latex[length=7mm]}, line width=2.5pt},
+    node distance=2.2cm]
+  \node (sp)   {Setpoint};
+  \node[draw, thick, circle, minimum size=1.6cm, right=1.6cm of sp] (soma) {};
+  \node at (soma) {\(\Sigma\)};
+  \node[bloco, right=of soma] (pi)  {Controlador PI\\(anti-windup)};
+  \node[bloco, right=of pi]   (pwm) {PWM LEDC\\500\,Hz / 10 bits};
+  \node[bloco, below=2.6cm of pwm] (mos) {MOSFET IRLZ44N\\+ 3 lâmpadas W5W};
+  \node[bloco, left=of mos]   (cam) {Câmara\\(acrílico + alumínio)};
+  \node[bloco, left=of cam]   (sen) {LM35 + ADC1\\(média de 16)};
+  \draw[seta] (sp) -- (soma);
+  \draw[seta] (soma) -- node[above]{\(e\)} (pi);
+  \draw[seta] (pi) -- node[above]{\(u\)} (pwm);
+  \draw[seta] (pwm) -- (mos);
+  \draw[seta] (mos) -- (cam);
+  \draw[seta] (cam) -- node[above]{\(T\)} (sen);
+  \draw[seta] (sen.west) -| node[pos=0.8, left]{\(-\)} (soma.south);
+\end{tikzpicture}
+\end{center}
+
+\vspace{0.5cm}
+O controlador PI calcula o duty cycle a partir do erro \(e = T_{sp} - T\):
+\begin{equation*}
+  u(t) = K_p\, e(t) + K_i \int e(t)\, dt
+\end{equation*}
+Como a potência nas lâmpadas cai com o quadrado da tensão, o duty é corrigido pela tensão da
+bateria:
+\begin{equation*}
+  D_{corr} = D_{PI} \cdot \left(\frac{12}{V_{bat}}\right)^{2}
+\end{equation*}
+
+% ---------- Cadeia de potencia (TikZ) ----------
+\titulofig{Cadeia de potência e proteções}
+\begin{center}
+\begin{tikzpicture}[
+    font=\normalsize,
+    b/.style={draw, thick, rounded corners=6pt, fill=cinzabox, align=center,
+              minimum height=3.4cm, minimum width=6.6cm},
+    seta/.style={-{Latex[length=6mm]}, line width=2pt},
+    node distance=1.3cm]
+  \node[b] (bat) {Pack 3S 18650\\+ BMS};
+  \node[b, right=of bat] (d)   {Schottky\\SS34};
+  \node[b, right=of d]   (f)   {Fusível\\3\,A + TVS};
+  \node[b, right=of f]   (k)   {Termostato\\KSD9700};
+  \node[b, below=1.6cm of k] (l) {Lâmpadas\\W5W};
+  \node[b, below=1.6cm of d] (buck) {Buck\\12\,\(\to\)\,5\,V};
+  \node[b, left=of buck] (esp) {ESP32\\DevKit v1};
+  \draw[seta] (bat) -- (d);
+  \draw[seta] (d) -- (f);
+  \draw[seta] (f) -- (k);
+  \draw[seta] (k) -- (l);
+  \draw[seta] (d) -- (buck);
+  \draw[seta] (buck) -- (esp);
+\end{tikzpicture}
+\end{center}
+
+\titulofig{Protótipo da câmara térmica}
+\imagem[0.85\linewidth][15cm]{figuras/prototipo.jpg}

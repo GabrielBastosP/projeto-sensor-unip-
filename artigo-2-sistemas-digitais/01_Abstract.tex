@@ -1,0 +1,15 @@
+% !TEX root = main.tex
+\begin{abstract}
+Digital systems are at the heart of computer engineering: physical quantities are sampled,
+quantized, processed by algorithms and converted back into actions on the physical world. This
+paper analyzes this digital chain in a compact thermal chamber controlled by an ESP32. The
+temperature measured by an LM35 sensor is sampled by a 12-bit analog-to-digital converter, filtered
+by a moving average, processed by a discrete-time proportional-integral (PI) controller and
+converted into heating power by a 10-bit pulse-width modulation (PWM) signal. The operating modes
+and safety conditions are organized as a finite state machine. The resolution of each stage, the
+effect of the digital filter and the discrete implementation of the controller are discussed.
+\pendente{Summarize the results: measured noise before and after the filter, and the closed-loop
+performance of the discrete PI.}
+\end{abstract}
+
+\keywords{Digital systems, Quantization, Digital filter, Discrete-time control, Finite state machine.}

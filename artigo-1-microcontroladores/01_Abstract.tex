@@ -1,0 +1,15 @@
+% !TEX root = main.tex
+\begin{abstract}
+Microcontrollers are the core of most embedded control systems, concentrating acquisition,
+processing, actuation and communication in a single low-cost device. This paper describes the
+firmware of an ESP32 microcontroller that controls the temperature of a compact, battery-powered
+thermal chamber heated by automotive halogen lamps. The firmware uses the ESP32 12-bit ADC to read
+an LM35 sensor and the battery voltage, the LEDC peripheral to generate a 500\,Hz, 10-bit PWM
+signal that drives the lamps through a MOSFET, and a proportional-integral (PI) algorithm with
+anti-windup and battery-voltage compensation. Two operating modes are implemented: a bench mode
+with Wi-Fi and a web interface, and an embedded mode in which the microcontroller stays in light
+sleep between control updates to extend battery life. \pendente{Summarize the results: current
+consumption in each mode, battery runtime and control performance.}
+\end{abstract}
+
+\keywords{Microcontrollers, ESP32, Embedded firmware, PWM, Low-power design.}

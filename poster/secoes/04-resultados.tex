@@ -1,0 +1,32 @@
+% !TEX root = ../main.tex
+% ================== RESULTADOS ==================
+% Troque os quadros cinza pelos graficos reais (figuras/*.png) e preencha a tabela.
+\secao{Resultados e Discussão}
+
+\titulofig{Ensaio de degrau em malha aberta}
+\imagem[0.9\linewidth][12.5cm]{figuras/degrau-malha-aberta.png}
+
+\pendente{Descrever o ensaio: duty aplicado, temperatura inicial e final, e o valor de \(\tau\)
+obtido (tempo para atingir 63,2\,\% da variação).}
+
+\titulofig{Resposta em malha fechada ao setpoint}
+\imagem[0.9\linewidth][12.5cm]{figuras/malha-fechada.png}
+
+\titulofig{Desempenho do controlador PI}
+\begin{center}
+\begin{tabular}{lc}
+  \toprule
+  \textbf{Parâmetro} & \textbf{Valor}\\
+  \midrule
+  Constante de tempo \(\tau\)        & \pendente{-- s}\\
+  Ganhos \(K_p\) / \(K_i\)           & \pendente{-- / --}\\
+  Setpoint                           & \pendente{-- °C}\\
+  Overshoot                          & \pendente{-- \%}\\
+  Tempo de acomodação                & \pendente{-- s}\\
+  Erro em regime                     & \pendente{\(\pm\) -- °C}\\
+  \bottomrule
+\end{tabular}
+\end{center}
+
+\pendente{Discutir os resultados: o PI manteve a temperatura no setpoint? Houve overshoot? Como
+a compensação de bateria afetou a resposta?}

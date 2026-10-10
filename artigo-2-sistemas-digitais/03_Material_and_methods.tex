@@ -1,0 +1,104 @@
+% !TEX root = main.tex
+\section{Material and methods}
+
+\subsection{Digital signal chain}
+Figure~\ref{fig:chain} shows the path of the signal. The LM35 sensor converts temperature into
+voltage (10\,mV/°C)~\cite{lm35}; the ADC samples and quantizes this voltage; a moving-average filter
+reduces noise; the discrete PI computes the control action; and the PWM converts the resulting
+digital duty cycle into average power on the lamps through a MOSFET switch~\cite{irlz44n}.
+
+\begin{figure}[htb]
+  \centering
+  \begin{tikzpicture}[font=\footnotesize, node distance=0.9cm,
+      b/.style={draw, rounded corners=2pt, fill=blue!6, align=center, minimum height=0.9cm, minimum width=1.6cm},
+      a/.style={b, fill=gray!12},
+      seta/.style={-{Latex[length=1.5mm]}, thick}]
+    \node[a] (s) {LM35};
+    \node[b, right=of s] (adc) {ADC\\12 bits};
+    \node[b, right=of adc] (f) {Moving\\average};
+    \node[b, below=0.7cm of f] (pi) {Discrete\\PI};
+    \node[b, left=of pi] (pwm) {PWM\\10 bits};
+    \node[a, left=of pwm] (l) {MOSFET\\+ lamps};
+    \draw[seta] (s) -- node[above]{$v(t)$} (adc);
+    \draw[seta] (adc) -- node[above]{$x[n]$} (f);
+    \draw[seta] (f) -- node[right]{$y[k]$} (pi);
+    \draw[seta] (pi) -- node[above]{$u[k]$} (pwm);
+    \draw[seta] (pwm) -- node[above]{$D$} (l);
+  \end{tikzpicture}
+  \caption{Digital signal chain (gray: analog domain; blue: digital domain).}
+  \label{fig:chain}
+\end{figure}
+
+\subsection{Sampling and quantization}
+The ESP32 ADC has 12 bits, that is, $2^{12} = 4096$ levels. For a full-scale voltage $V_{FS}$, the
+quantization step is
+\begin{equation}
+  q = \frac{V_{FS}}{2^{12}}
+  \label{eq:lsb}
+\end{equation}
+and, since the LM35 produces 10\,mV/°C, the temperature resolution is $q$\,/\,(10\,mV/°C).
+\pendente{Inform the ADC attenuation and $V_{FS}$ used and compute $q$ and the resolution in °C.}
+Because the thermal time constant of the chamber is long, a sampling period of 60\,s (1\,s in bench
+mode) is enough to represent the temperature without aliasing of the useful signal.
+
+\subsection{Moving-average filter}
+Each temperature sample $y[k]$ is the average of $N = 16$ consecutive conversions:
+\begin{equation}
+  y[k] = \frac{1}{N}\sum_{n=0}^{N-1} x[n]
+  \label{eq:ma}
+\end{equation}
+For uncorrelated noise, averaging $N$ samples reduces the noise standard deviation by a factor of
+$\sqrt{N}$, i.e.\ by 4 for $N=16$~\cite{oppenheim2010}.
+
+\subsection{PWM as a digital-to-power converter}
+The PWM is generated at 500\,Hz with 10-bit resolution, so the duty cycle $D$ has 1024 steps of
+approximately 0.1\,\%. With three 5\,W lamps (15\,W nominal), each step corresponds to roughly
+15\,mW of average heating power. The MOSFET operates only as an on/off switch, which makes the
+actuation stage itself a digital circuit.
+
+\subsection{Discrete-time PI controller}
+The continuous PI law is discretized with a sampling period $T_s$ using the backward-Euler
+approximation of the integral~\cite{franklin1998}:
+\begin{equation}
+  u[k] = K_p\,e[k] + K_i T_s \sum_{i=0}^{k} e[i]
+  \label{eq:dpi}
+\end{equation}
+The output is limited to the PWM range (0 to 1023), and the accumulated sum is frozen while the
+output is saturated to prevent integral windup~\cite{astrom1995}. Finally, the duty cycle is
+corrected by the battery voltage, since the lamp power depends on the square of the supply:
+\begin{equation}
+  D_{corr} = D_{PI}\left(\frac{12}{V_{bat}}\right)^{2}
+  \label{eq:comp}
+\end{equation}
+
+\subsection{Finite state machine}
+The behavior of the system is organized as the finite state machine of Figure~\ref{fig:fsm}. After
+initialization, the system runs in bench mode (Wi-Fi on, 1\,s period) or embedded mode (Wi-Fi off,
+light sleep, 60\,s period). In any state, a temperature above the firmware safety limit forces the
+FAULT state, which turns the PWM off. \pendente{Inform the firmware temperature limit and how the
+system leaves the FAULT state.}
+
+\begin{figure}[htb]
+  \centering
+  \begin{tikzpicture}[font=\footnotesize, node distance=1.0cm and 1.3cm,
+      st/.style={draw, circle, fill=blue!6, minimum size=1.25cm, align=center},
+      seta/.style={-{Latex[length=1.5mm]}, thick}]
+    \node[st] (i) {INIT};
+    \node[st, above right=0.3cm and 1.3cm of i] (b) {BENCH};
+    \node[st, below right=0.3cm and 1.3cm of i] (e) {EMBED.};
+    \node[st, right=3.2cm of i, fill=red!10] (f) {FAULT};
+    \draw[seta] (i) -- node[above left, pos=0.4]{Wi-Fi} (b);
+    \draw[seta] (i) -- node[below left, pos=0.4]{battery} (e);
+    \draw[seta] (b) to[bend left=15] node[right]{mode} (e);
+    \draw[seta] (e) to[bend left=15] node[left]{mode} (b);
+    \draw[seta] (b) -- node[above right, pos=0.5]{$T > T_{max}$} (f);
+    \draw[seta] (e) -- node[below right, pos=0.5]{$T > T_{max}$} (f);
+  \end{tikzpicture}
+  \caption{Finite state machine of the chamber firmware.}
+  \label{fig:fsm}
+\end{figure}
+
+\subsection{Experimental procedure}
+\pendente{Describe the tests: record a series of raw ADC samples at constant temperature and
+compute the standard deviation before and after the moving average; record the closed-loop
+response of the discrete PI to a setpoint; force the FAULT state and verify that the PWM turns off.}

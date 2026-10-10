@@ -1,0 +1,21 @@
+% !TEX root = ../main.tex
+% ================== METODOLOGIA ==================
+\secao{Metodologia}
+
+O desenvolvimento seguiu o fluxo \textbf{pesquisa bibliográfica \(\to\) concepção \(\to\)
+implementação \(\to\) testes \(\to\) avaliação dos resultados}.
+
+\begin{itemize}
+  \item \textbf{Leitura:} LM35 (10\,mV/°C) no ADC1 do ESP32 (12 bits), média de 16 amostras
+        a cada 60\,s;
+  \item \textbf{Atuação:} PWM via LEDC (500\,Hz, 10 bits), mantido ativo em \emph{light sleep}
+        para economizar bateria;
+  \item \textbf{Identificação:} ensaio de degrau em malha aberta para extrair a constante de
+        tempo \(\tau\) da planta;
+  \item \textbf{Sintonia e validação:} ajuste de \(K_p\) e \(K_i\) e análise da resposta ao
+        setpoint (overshoot, tempo de acomodação e erro em regime);
+  \item \textbf{Segurança:} proteções térmica (KSD9700), elétrica (fusível, TVS, Schottky) e de
+        firmware (limite de temperatura).
+\end{itemize}
+
+Ferramentas: Arduino IDE / PlatformIO (C++), multímetro, fonte de bancada e osciloscópio.

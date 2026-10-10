@@ -1,0 +1,15 @@
+% !TEX root = main.tex
+\section{Introduction}
+
+Most modern control and instrumentation systems are digital: sensors produce continuous signals,
+but the decisions are taken by processors that work with discrete samples and finite-length
+binary numbers~\cite{tocci2011}. Converting a continuous physical process into this digital domain
+introduces sampling, quantization and finite resolution in both the measurement and the actuation,
+and the control law itself becomes a difference equation executed at fixed time
+intervals~\cite{franklin1998,oppenheim2010}.
+
+This paper uses a compact thermal chamber as a case study of a complete digital system. The chamber
+is an acrylic box heated by three 12\,V/5\,W automotive lamps and controlled by an ESP32
+microcontroller~\cite{esp32ds}. Instead of focusing on the hardware, the analysis follows the
+signal through each digital stage, from the analog-to-digital conversion to the PWM output, and
+describes the finite state machine that organizes the operation of the system.

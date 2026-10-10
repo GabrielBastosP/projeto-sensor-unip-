@@ -1,0 +1,121 @@
+% !TEX root = main.tex
+% ==================================================================
+%  POSTER A0 -- Camara Termica Compacta com Controle PWM
+%  Seminario Integrador / Infor -- Engenharia de Computacao -- UNIP 2026
+%
+%  COMO EDITAR (grupo):
+%   - Este arquivo so tem o layout e o cabecalho (titulo, autores, logos).
+%   - O texto de cada secao fica em secoes/*.tex  -> cada um edita a sua.
+%   - Imagens: coloque em figuras/ (prefira .jpg; .png so para graficos/prints).
+%     Enquanto a imagem nao existir, aparece um quadro cinza "Inserir figura".
+%   - Tudo que esta em VERMELHO (\pendente{...}) ainda falta preencher.
+%   - Plano gratuito do Overleaf: compilacao maxima de 10 s. Imagens grandes
+%     deixam lento -> reduza as fotos para ~2000 px de largura antes de subir.
+% ==================================================================
+\RequirePackage{fix-cm}               % fontes da matematica escalaveis (tamanhos grandes)
+\documentclass[a0,portrait]{a0poster}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[brazil]{babel}
+\usepackage[scaled]{helvet}            % mesma fonte do poster de referencia
+\renewcommand{\familydefault}{\sfdefault}
+\usepackage{courier}                   % e-mail em fonte monoespacada
+\usepackage[margin=2.5cm, bottom=3.5cm]{geometry}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage{multicol}
+\usepackage{booktabs}
+\usepackage{amsmath}
+\DeclareFontShape{OMX}{cmex}{m}{n}{<->cmex10}{}   % evita aviso de tamanho da fonte matematica
+\usepackage{enumitem}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, positioning, calc}
+\usepackage{eso-pic}                   % rodape fixo no pe da pagina
+\usepackage[hidelinks]{hyperref}
+
+% ---------------- Cores e estilos ----------------
+\definecolor{azultitulo}{RGB}{20,40,190}     % azul dos titulos (igual a referencia)
+\definecolor{cinzabox}{RGB}{238,238,238}
+\setlength{\columnsep}{3.5cm}
+\setlength{\parindent}{1.5em}
+\setlength{\parskip}{0.3ex}
+\setlist{leftmargin=1.2em, itemsep=0.2ex, topsep=0.4ex}
+
+% Titulo de secao azul centralizado:  \secao{Motivacao}
+\newcommand{\secao}[1]{\par\vspace{1.4cm}%
+  {\centering\color{azultitulo}\LARGE\bfseries #1\par}\vspace{0.6cm}}
+
+% Titulo de figura/tabela (negrito, maiusculo, centralizado, ACIMA da imagem)
+\newcommand{\titulofig}[1]{\par\vspace{0.6cm}{\centering\small\bfseries\MakeUppercase{#1}\par}\vspace{0.4cm}}
+
+% Texto pendente (em vermelho) -- some quando voce substitui pelo texto final
+\newcommand{\pendente}[1]{{\color{red}[#1]}}
+
+% \imagem[largura][altura]{figuras/arquivo.jpg}
+%   cabe a imagem dentro de largura x altura sem distorcer.
+%   Se o arquivo nao existir, desenha um quadro cinza com o nome.
+\NewDocumentCommand{\imagem}{O{\linewidth} O{12cm} m}{%
+  \begin{center}
+  \IfFileExists{#3}%
+    {\includegraphics[width=#1,height=#2,keepaspectratio]{#3}}%
+    {\fcolorbox{gray}{cinzabox}{\parbox[c][\dimexpr#2-2\fboxsep-2\fboxrule][c]{\dimexpr#1-2\fboxsep-2\fboxrule}%
+      {\centering\color{gray}\itshape Inserir figura:\\ \normalfont\ttfamily\small\detokenize{#3}}}}%
+  \end{center}}
+
+% Logos do cabecalho (quadro cinza se nao existirem)
+\newcommand{\logo}[2]{\IfFileExists{#2}%
+  {\includegraphics[width=#1,height=#1,keepaspectratio]{#2}}%
+  {\fcolorbox{gray}{cinzabox}{\parbox[c][#1][c]{#1}{\centering\color{gray}\small logo\\\ttfamily\detokenize{#2}}}}}
+
+\pagestyle{empty}
+
+% ---------------- Rodape fixo (canto inferior esquerdo) ----------------
+\AddToShipoutPictureFG*{%
+  \AtPageLowerLeft{\put(\LenToUnit{2.5cm},\LenToUnit{1.6cm}){%
+    \small\textbf{Seminário Integrador / Infor 2026}, Engenharia de Computação -- UNIP,
+    Novembro de 2026, São José dos Campos, Brasil}}}
+
+\begin{document}
+
+% ================================================================
+%  CABECALHO
+% ================================================================
+\noindent
+\begin{minipage}[c]{0.16\textwidth}\centering
+  \logo{11cm}{logos/unip.png}
+\end{minipage}%
+\begin{minipage}[c]{0.68\textwidth}\centering
+  {\color{azultitulo}\veryHuge\bfseries
+   CÂMARA TÉRMICA COMPACTA COM\\ CONTROLE PWM E CONTROLADOR PI\par}
+  \vspace{1.2cm}
+  {\Large\bfseries Gabriel Marques\par}
+  \vspace{0.7cm}
+  {\large Engenharia de Computação -- 8\textsuperscript{o} semestre\\
+   Universidade Paulista -- UNIP\\
+   São José dos Campos - SP, Brasil\par}
+  \vspace{0.5cm}
+  {\large\ttfamily gabrielmarques2005@hotmail.com\par}
+\end{minipage}%
+\begin{minipage}[c]{0.16\textwidth}\centering
+  \logo{11cm}{logos/curso.png}
+\end{minipage}
+
+\vspace{1cm}
+
+% ================================================================
+%  CORPO (2 colunas)
+% ================================================================
+\begin{multicols}{2}
+  \input{secoes/01-motivacao-introducao}
+  \input{secoes/02-solucao-proposta}
+
+  \columnbreak   % <- tudo abaixo vai para a coluna da direita
+
+  \input{secoes/03-metodologia}
+  \input{secoes/04-resultados}
+  \input{secoes/05-consideracoes-finais}
+  \input{secoes/06-referencias}
+\end{multicols}
+
+\end{document}

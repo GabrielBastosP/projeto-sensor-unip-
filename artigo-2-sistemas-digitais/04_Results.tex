@@ -1,0 +1,29 @@
+% !TEX root = main.tex
+\section{Results}
+
+\begin{table}[htb]
+  \centering
+  \caption{Resolution and noise of the digital chain.}
+  \label{tab:digital}
+  \begin{tabular}{lc}
+    \toprule
+    \textbf{Parameter} & \textbf{Value}\\
+    \midrule
+    ADC step $q$                          & \pendente{-- mV}\\
+    Temperature resolution                & \pendente{-- °C}\\
+    Noise without filter ($\sigma$)       & \pendente{-- °C}\\
+    Noise with moving average ($\sigma$)  & \pendente{-- °C}\\
+    PWM step                              & 0.1\,\% ($\approx$15\,mW)\\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\begin{figure}[htb]
+  \centering
+  \imagem[\linewidth][5cm]{figures/discrete-pi.png}
+  \caption{Closed-loop response of the discrete PI controller.}
+  \label{fig:dpi}
+\end{figure}
+
+\pendente{Describe Table~\ref{tab:digital} and Figure~\ref{fig:dpi}: did the filter reduce the noise
+by close to $\sqrt{16}=4$? How did the discrete PI follow the setpoint?}

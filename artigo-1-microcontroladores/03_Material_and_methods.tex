@@ -1,0 +1,93 @@
+% !TEX root = main.tex
+\section{Material and methods}
+
+\subsection{System overview}
+The chamber is an acrylic box of approximately 100\,×\,100\,×\,80\,mm with three 12\,V/5\,W W5W
+lamps on the lid and an aluminum plate as thermal mass. An ESP32 DevKit v1 board is the only
+processing element: it reads the temperature and the battery voltage, computes the control action
+and drives the lamps through an IRLZ44N logic-level MOSFET~\cite{irlz44n}, as shown in
+Figure~\ref{fig:mcu}. The system is powered by a 3S 18650 battery pack, with a buck converter
+supplying 5\,V to the board.
+
+\begin{figure}[htb]
+  \centering
+  \resizebox{\linewidth}{!}{%
+  \begin{tikzpicture}[font=\footnotesize,
+      b/.style={draw, rounded corners=2pt, fill=gray!12, align=center,
+                minimum height=0.9cm, minimum width=1.9cm},
+      seta/.style={-{Latex[length=1.6mm]}, thick}]
+    \node[draw, thick, rounded corners=3pt, fill=blue!6, align=center,
+          minimum width=3.2cm, minimum height=3.3cm] (mcu)
+          {\textbf{ESP32}\\[2pt]ADC1 (12 bits)\\LEDC (PWM)\\Timer / sleep\\Wi-Fi};
+    \node[b, left=0.9cm of mcu.north west, anchor=north east] (lm) {LM35\\10\,mV/°C};
+    \node[b, left=0.9cm of mcu.south west, anchor=south east] (vb) {Battery\\divider};
+    \node[b, right=0.9cm of mcu.north east, anchor=north west] (mos) {IRLZ44N +\\3$\times$W5W};
+    \node[b, right=0.9cm of mcu.south east, anchor=south west] (web) {Web\\interface};
+    \draw[seta] (lm.east) -- (lm.east -| mcu.west);
+    \draw[seta] (vb.east) -- (vb.east -| mcu.west);
+    \draw[seta] (mos.west -| mcu.east) -- node[above]{PWM} (mos.west);
+    \draw[seta, <->] (web.west -| mcu.east) -- node[above]{Wi-Fi} (web.west);
+  \end{tikzpicture}}
+  \caption{Microcontroller-centered architecture of the thermal chamber.}
+  \label{fig:mcu}
+\end{figure}
+
+\subsection{Analog acquisition}
+The LM35 sensor outputs 10\,mV/°C~\cite{lm35} and is connected to an ADC1 channel. ADC1 was chosen
+because, on the ESP32, ADC2 cannot be used while the Wi-Fi driver is active~\cite{esp32trm}. Each
+reading is the average of 16 consecutive conversions, which reduces noise without a hardware
+filter. The battery voltage, needed for the power compensation, is read through a resistive divider
+on a second ADC1 channel \pendente{inform the divider resistors and the ADC attenuation used}.
+
+\subsection{PWM generation}
+The lamps are driven by the LEDC (LED control) peripheral configured at 500\,Hz with 10-bit
+resolution (1024 duty levels). The low frequency keeps the MOSFET switching losses small, and the
+thermal inertia of the chamber makes the PWM ripple irrelevant to the temperature. The LEDC timer
+must be clocked by a source that remains active in light sleep, so that the lamps keep receiving the
+PWM signal while the processor sleeps \pendente{confirm the LEDC clock source used in the firmware}.
+
+\subsection{Control algorithm}
+At each control period the firmware computes the error between the setpoint and the measured
+temperature and updates a PI controller~\cite{astrom1995}:
+\begin{equation}
+  u = K_p\,e + K_i \int e\,dt
+  \label{eq:pi}
+\end{equation}
+The integral term is frozen while the output is saturated (anti-windup). Because the lamp power is
+proportional to the square of the supply voltage, the duty cycle is corrected by the measured
+battery voltage:
+\begin{equation}
+  D_{corr} = D_{PI}\left(\frac{12}{V_{bat}}\right)^{2}
+  \label{eq:comp}
+\end{equation}
+
+\subsection{Operating modes and power management}
+The firmware has two modes. In \emph{bench mode}, Wi-Fi is on, the loop runs every 1\,s and a web
+page shows the setpoint, temperature and duty cycle in real time. In \emph{embedded mode}, Wi-Fi is
+off and the ESP32 enters light sleep between control updates, taken every 60\,s. Light sleep was
+chosen instead of deep sleep because deep sleep turns off the digital peripherals and would stop
+the PWM output, whereas light sleep preserves the peripheral state and resumes execution where it
+stopped~\cite{esp32trm}.
+
+\begin{figure}[htb]
+  \centering
+  \begin{tikzpicture}[font=\footnotesize, node distance=0.25cm,
+      p/.style={draw, rounded corners=2pt, fill=blue!6, align=center, minimum width=4.6cm, minimum height=0.5cm},
+      seta/.style={-{Latex[length=1.5mm]}, thick}]
+    \node[p] (w) {Wake up (timer)};
+    \node[p, below=of w] (a) {Read LM35 and $V_{bat}$ (16 samples)};
+    \node[p, below=of a] (c) {PI + anti-windup};
+    \node[p, below=of c] (d) {Battery compensation};
+    \node[p, below=of d] (e) {Update LEDC duty};
+    \node[p, below=of e] (s) {Light sleep (60\,s)};
+    \foreach \x/\y in {w/a, a/c, c/d, d/e, e/s} \draw[seta] (\x) -- (\y);
+    \draw[seta] (s.east) -- ++(0.5,0) |- (w.east);
+  \end{tikzpicture}
+  \caption{Main loop of the firmware in embedded mode.}
+  \label{fig:loop}
+\end{figure}
+
+\subsection{Experimental procedure}
+\pendente{Describe the tests: current consumption of the board in bench mode, in embedded mode
+awake and in light sleep (multimeter or shunt); estimated and measured battery runtime; and the
+closed-loop response to a setpoint in each mode.}

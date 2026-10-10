@@ -1,0 +1,49 @@
+{
+  // ---------- Compilacao (igual ao setup dos relatorios) ----------
+  // Salva sozinho 1 s depois que voce para de digitar e recompila
+  "files.autoSave": "afterDelay",
+  "files.autoSaveDelay": 1000,
+  "latex-workshop.latex.autoBuild.run": "onFileChange",
+  "latex-workshop.view.pdf.viewer": "tab",
+  "latex-workshop.view.pdf.tab.editorGroup": "right",
+
+  // PDF acompanha o cursor; Ctrl+clique no PDF leva para a linha do codigo
+  "latex-workshop.synctex.afterBuild.enabled": true,
+  "latex-workshop.view.pdf.internal.synctex.keybinding": "ctrl-click",
+
+  // pdflatex direto (o latexmk do MiKTeX exige Perl)
+  "latex-workshop.latex.tools": [
+    {
+      "name": "pdflatex",
+      "command": "pdflatex",
+      "args": ["-synctex=1", "-interaction=nonstopmode", "-file-line-error", "%DOC%"],
+      "env": {}
+    },
+    {
+      "name": "bibtex",
+      "command": "bibtex",
+      "args": ["%DOCFILE%"],
+      "env": {}
+    }
+  ],
+  "latex-workshop.latex.recipes": [
+    { "name": "pdfLaTeX (rapido)", "tools": ["pdflatex"] },
+    { "name": "pdfLaTeX + BibTeX (referencias)", "tools": ["pdflatex", "bibtex", "pdflatex", "pdflatex"] }
+  ],
+  "latex-workshop.latex.recipe.default": "first",
+  "latex-workshop.latex.autoClean.run": "never",
+
+  "[latex]": { "editor.wordWrap": "on" },
+  "[bibtex]": { "editor.wordWrap": "on" },
+
+  // Esconde arquivos auxiliares no explorador
+  "files.exclude": {
+    "**/*.aux": true, "**/*.log": true, "**/*.out": true, "**/*.toc": true,
+    "**/*.synctex.gz": true, "**/*.fls": true, "**/*.fdb_latexmk": true,
+    "**/*.bbl": true, "**/*.blg": true, "**/a0header.ps": true
+  },
+
+  // Git: puxa as alteracoes do grupo sozinho a cada poucos minutos
+  "git.autofetch": true,
+  "git.confirmSync": false
+}

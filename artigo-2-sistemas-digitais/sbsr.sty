@@ -1,0 +1,81 @@
+% ==================================================================
+%  sbsr.sty -- estilo no formato SBSR (recriado a partir do artigo
+%  de exemplo SBSR2026: A4, 2 colunas, Times 10 pt).
+%
+%  Usa os MESMOS comandos do template oficial do Overleaf
+%  (\title, \author, \address, \twocolumn[\maketitle], abstract,
+%  \keywords). Se o professor exigir o sbsr.sty oficial, e so
+%  substituir este arquivo pelo dele -- o resto nao muda.
+% ==================================================================
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{sbsr}[2026/10/10 SBSR-like style]
+
+\RequirePackage[utf8]{inputenc}
+\RequirePackage[T1]{fontenc}
+\RequirePackage{times}                 % Times (igual ao exemplo)
+\RequirePackage{amsmath}
+\RequirePackage[a4paper, left=1.9cm, right=1.9cm, top=2.5cm, bottom=2.5cm,
+                columnsep=0.6cm]{geometry}
+\RequirePackage{graphicx}
+\RequirePackage{xcolor}
+\RequirePackage{booktabs}
+\RequirePackage{xparse}
+\RequirePackage{cite}                  % [1-5] em vez de [1,2,3,4,5]
+\RequirePackage[font={small,bf}, labelsep=colon, justification=centering,
+                skip=6pt]{caption}
+\RequirePackage{titlesec}
+\RequirePackage{tikz}
+\usetikzlibrary{arrows.meta, positioning, calc}
+\RequirePackage[hidelinks]{hyperref}
+
+\pagestyle{empty}
+\setlength{\parindent}{1em}
+\setlength{\parskip}{0pt}
+
+% ---------- Titulo ----------
+\def\@address{}
+\newcommand{\address}[1]{\def\@address{#1}}
+\renewcommand{\maketitle}{%
+  \begin{center}
+    {\large\bfseries\MakeUppercase{\@title}\par}
+    \vspace{0.6em}
+    {\itshape\@author\par}
+    \vspace{0.6em}
+    {\small\@address\par}
+  \end{center}
+  \vspace{1.2em}}
+
+% ---------- Resumo e palavras-chave ----------
+\renewenvironment{abstract}%
+  {\begin{center}\bfseries\itshape ABSTRACT\end{center}\vspace{-0.4em}\itshape\noindent\ignorespaces}%
+  {\par\vspace{0.8em}}
+\newcommand{\keywords}[1]{\noindent{\bfseries\itshape Key words} -- {\itshape #1}\par\vspace{0.6em}}
+
+% ---------- Secoes: "1. INTRODUCTION" centralizado / "2.1. Titulo" a esquerda ----------
+\titleformat{\section}{\centering\normalsize\bfseries}{\thesection.}{0.5em}{\MakeUppercase}
+\titlespacing*{\section}{0pt}{1.4em}{0.8em}
+\titleformat{\subsection}{\normalsize\bfseries}{\thesubsection.}{0.5em}{}
+\titlespacing*{\subsection}{0pt}{1.0em}{0.4em}
+\titleformat{\subsubsection}{\normalsize\bfseries\itshape}{\thesubsubsection.}{0.5em}{}
+
+% ---------- Legendas: "Figure 1: texto" / "Table 1: texto" ----------
+\captionsetup[table]{position=top}
+
+% ---------- Referencias ----------
+\renewcommand{\refname}{REFERENCES}
+\let\@oldbib\thebibliography
+\renewcommand{\thebibliography}[1]{\small\@oldbib{#1}\setlength{\itemsep}{0.2em}}
+
+% ---------- Imagem com quadro cinza enquanto o arquivo nao existe ----------
+% \imagem[largura][altura]{figures/arquivo.jpg}
+\definecolor{cinzabox}{RGB}{238,238,238}
+\NewDocumentCommand{\imagem}{O{\linewidth} O{5cm} m}{%
+  \IfFileExists{#3}%
+    {\includegraphics[width=#1,height=#2,keepaspectratio]{#3}}%
+    {\fcolorbox{gray}{cinzabox}{\parbox[c][\dimexpr#2-2\fboxsep-2\fboxrule][c]{\dimexpr#1-2\fboxsep-2\fboxrule}%
+      {\centering\color{gray}\itshape Insert figure:\\ \normalfont\ttfamily\footnotesize\detokenize{#3}}}}}
+
+% Texto pendente (vermelho) -- troque pelo texto final
+\newcommand{\pendente}[1]{{\color{red}[#1]}}
+
+\endinput

@@ -1,0 +1,28 @@
+# Arquivos gerados na compilacao (cada um gera o seu)
+*.aux
+*.log
+*.out
+*.toc
+*.lof
+*.lot
+*.bbl
+*.blg
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+*.synctex(busy)
+a0header.ps
+
+# PDFs gerados nao vao para o Git (evita conflito)...
+*.pdf
+# ...exceto as versoes de entrega e os modelos de referencia
+!entregas/*.pdf
+!modelos/*.pdf
+
+# Lixo do sistema
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# Log do instalador
+setup-log.txt

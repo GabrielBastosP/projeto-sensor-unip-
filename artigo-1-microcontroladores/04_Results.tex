@@ -1,0 +1,28 @@
+% !TEX root = main.tex
+\section{Results}
+
+\begin{table}[htb]
+  \centering
+  \caption{Current consumption of the ESP32 board in each mode (lamps off).}
+  \label{tab:current}
+  \begin{tabular}{lc}
+    \toprule
+    \textbf{Mode} & \textbf{Current}\\
+    \midrule
+    Bench mode (Wi-Fi on)      & \pendente{-- mA}\\
+    Embedded mode, awake       & \pendente{-- mA}\\
+    Embedded mode, light sleep & \pendente{-- mA}\\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\begin{figure}[htb]
+  \centering
+  \imagem[\linewidth][5cm]{figures/closed-loop.png}
+  \caption{Chamber temperature and PWM duty cycle in closed loop.}
+  \label{fig:closed}
+\end{figure}
+
+\pendente{Describe Table~\ref{tab:current} and Figure~\ref{fig:closed}: how much the light sleep
+reduces the consumption, the resulting battery runtime and how the temperature followed the
+setpoint.}

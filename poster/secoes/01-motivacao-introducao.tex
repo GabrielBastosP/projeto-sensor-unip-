@@ -1,0 +1,30 @@
+% !TEX root = ../main.tex
+% ================== MOTIVACAO + INTRODUCAO ==================
+\secao{Motivação}
+
+\begin{itemize}
+  \item Sistemas de controle de temperatura em malha fechada são a base de fornos,
+        incubadoras, estufas e diversos processos industriais, mas plataformas didáticas
+        para estudá-los costumam ser caras, volumosas ou de difícil instrumentação.
+  \item Propor uma bancada compacta, de baixo custo e totalmente instrumentada para observar
+        e validar, de forma visual e mensurável, um controlador PI atuando sobre um sistema
+        térmico real.
+\end{itemize}
+
+\secao{Introdução}
+
+O controle de temperatura em malha fechada combina instrumentação, eletrônica de potência e
+teoria de controle. Este trabalho apresenta uma câmara térmica compacta
+(\(\approx\)100\,×\,100\,×\,80\,mm) aquecida por três lâmpadas automotivas W5W, com sensor
+LM35 e um controlador PI embarcado em um ESP32, que ajusta o PWM aplicado às lâmpadas por meio
+de um MOSFET IRLZ44N para manter a temperatura interna em um setpoint definido [1, 5].
+
+\titulofig{Objetivos específicos}
+\begin{itemize}
+  \item Estudar controle PI, PWM e instrumentação com sensores analógicos;
+  \item Projetar e montar a câmara (acrílico, lâmpadas W5W, chapa de alumínio, LM35 e cadeia
+        de potência protegida);
+  \item Implementar o firmware do ESP32 (ADC, PWM via LEDC, PI com anti-windup e compensação
+        de bateria);
+  \item Realizar o ensaio de degrau, sintonizar o PI e validar a malha fechada.
+\end{itemize}

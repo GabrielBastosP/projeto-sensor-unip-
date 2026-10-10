@@ -1,0 +1,15 @@
+% !TEX root = main.tex
+\section{Introduction}
+
+A microcontroller integrates a processor, memory and peripherals such as analog-to-digital
+converters, timers and communication interfaces in a single chip, which makes it the natural
+choice for small embedded control systems. Modern devices such as the ESP32 add wireless
+connectivity and several low-power modes~\cite{esp32ds,esp32trm}, allowing the same hardware to be
+used both as a laboratory instrument and as a battery-powered product.
+
+Closed-loop temperature control is a good case study for these resources: the microcontroller
+must sample an analog sensor, run a control algorithm, generate a power signal for the actuator and
+manage its own energy consumption~\cite{ogata2010}. This paper presents the firmware of an ESP32
+that controls a compact thermal chamber heated by three automotive W5W lamps. The emphasis is on
+how each microcontroller peripheral was used and on the design decisions about timing and power
+consumption.
